@@ -1,4 +1,5 @@
 ﻿@page "/running"
+@using RunningBlazor.Shared.Running
 <PageTitle>Data</PageTitle>
 
 <h1>Data</h1>
@@ -25,20 +26,42 @@ else
                     <td>@item.Date.ToShortDateString()</td>
                     <td>@item.Minutes</td>
                     <td>@item.Miles</td>
-                    <td>@item.Speed</td>
+                    <td>@item.Speed.ToString("N")</td>
                 </tr>
             }
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>
+                    <NavLink href="addrundata">
+                        <button class="btn btn-primary">Add Data</button>
+                    </NavLink>
+                </td>
+            </tr>
         </tbody>
     </table>
 }
 
 @code {
-    private Shared.Running.RunCalcData[]? data = null;
+    private RunData[]? data = null;
 
     protected override async Task OnInitializedAsync()
     {
-
-        await Task.Delay(5000).ConfigureAwait(false);
-        data = [];
+        data = [
+            new()
+            {
+                Date = new(2025,3,16),
+                Feet = 5280,
+                Milliseconds = 20 * 60 * 1000
+            },
+            new()
+            {
+                Date = new(2025,3,17),
+                Feet = 5280 * 3,
+                Milliseconds = 25 * 60 * 1000
+            }
+        ];
     }
 }

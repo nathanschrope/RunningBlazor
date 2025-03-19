@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\RunningBlazor.Web.Client\RunningBlazor.Web.Client.csproj" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.3" />
   </ItemGroup>
 
 </Project>

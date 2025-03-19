@@ -1,0 +1,18 @@
+﻿@page "/addrundata"
+@using RunningBlazor.Shared.Services
+@using RunningBlazor.Shared.Running
+@inject IDataFactory<RunData> DataFactory
+
+<PageTitle>Add Run Data</PageTitle>
+
+<h1>Hello, world!</h1>
+
+@code {
+    private IReadOnlyList<RunData> datas
+    {
+        get
+        {
+            return DataFactory.GetAll();
+        }
+    }
+}

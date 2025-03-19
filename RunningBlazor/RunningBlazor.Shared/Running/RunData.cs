@@ -4,6 +4,8 @@ namespace RunningBlazor.Shared.Running;
 
 public record RunData
 {
+    public int ID { get; init; } = -1;
+
     [Required]
     public required DateTime Date { get; init; }
 
@@ -14,10 +16,7 @@ public record RunData
     [Required]
     [Range(1, float.MaxValue)]
     public required int Feet { get; init; }
-}
 
-public record RunCalcData : RunData
-{
     public float Speed
     {
         get

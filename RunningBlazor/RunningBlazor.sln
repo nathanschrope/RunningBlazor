@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35828.75 d17.13
+VisualStudioVersion = 17.13.35828.75
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor", "RunningBlazor\RunningBlazor\RunningBlazor.csproj", "{B0234BF1-012F-493D-99D8-141C656688EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor", "RunningBlazor\RunningBlazor.csproj", "{B0234BF1-012F-493D-99D8-141C656688EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor.Shared", "RunningBlazor\RunningBlazor.Shared\RunningBlazor.Shared.csproj", "{7494FD7A-7A7E-452A-94A2-2BD501C5EA1B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor.Shared", "RunningBlazor.Shared\RunningBlazor.Shared.csproj", "{7494FD7A-7A7E-452A-94A2-2BD501C5EA1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor.Web", "RunningBlazor\RunningBlazor.Web\RunningBlazor.Web.csproj", "{93D141B2-6EC4-43AE-915F-BB3539D30022}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor.Web", "RunningBlazor.Web\RunningBlazor.Web.csproj", "{93D141B2-6EC4-43AE-915F-BB3539D30022}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor.Web.Client", "RunningBlazor\RunningBlazor.Web.Client\RunningBlazor.Web.Client.csproj", "{00BC43FF-3053-4012-9561-DF9A14CE5042}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunningBlazor.Web.Client", "RunningBlazor.Web.Client\RunningBlazor.Web.Client.csproj", "{00BC43FF-3053-4012-9561-DF9A14CE5042}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using RunningBlazor.Shared.Services;
 using RunningBlazor.Services;
+using RunningBlazor.Shared.Running;
 
 namespace RunningBlazor;
 
@@ -18,6 +19,7 @@ public static class MauiProgram
 
         // Add device-specific services used by the RunningBlazor.Shared project
         builder.Services.AddSingleton<IFormFactor, FormFactor>();
+        builder.Services.AddSingleton<IDataFactory<RunData>, DataFactory<RunData>>();
 
         builder.Services.AddMauiBlazorWebView();
 
