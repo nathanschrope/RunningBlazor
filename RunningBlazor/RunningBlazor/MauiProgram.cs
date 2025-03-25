@@ -2,6 +2,7 @@
 using RunningBlazor.Shared.Services;
 using RunningBlazor.Services;
 using RunningBlazor.Shared.Running;
+using SQLitePCL;
 
 namespace RunningBlazor;
 
@@ -9,6 +10,8 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
+        Batteries.Init();
+
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()

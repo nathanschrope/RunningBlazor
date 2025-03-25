@@ -1,6 +1,7 @@
 using RunningBlazor.Web.Components;
 using RunningBlazor.Shared.Services;
 using RunningBlazor.Web.Services;
+using SQLitePCL;
 
 namespace RunningBlazor;
 
@@ -8,6 +9,8 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        Batteries.Init();
+
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.

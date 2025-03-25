@@ -10,34 +10,17 @@ public record RunData
     public required DateTime Date { get; init; }
 
     [Required]
-    [Range(1, float.MaxValue)]
+    [Range(1, int.MaxValue)]
     public required int Milliseconds { get; init; }
 
     [Required]
-    [Range(1, float.MaxValue)]
+    [Range(1, int.MaxValue)]
     public required int Feet { get; init; }
 
-    public float Speed
-    {
-        get
-        {
-            return this.Miles / (this.Minutes / 60);
-        }
-    }
+    public float Speed => (float)this.Miles / ((float)this.Minutes / 60);
 
-    public float Miles
-    {
-        get
-        {
-            return this.Feet / 5280;
-        }
-    }
+    public float Miles => (float)this.Feet / 5280;
 
-    public float Minutes
-    {
-        get
-        {
-            return this.Milliseconds / 60000;
-        }
-    }
+
+    public float Minutes => (float)this.Milliseconds / 60000;
 }
