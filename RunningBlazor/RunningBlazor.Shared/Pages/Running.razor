@@ -1,5 +1,7 @@
-﻿@page "/running"
+﻿@page "/"
+@using RunningBlazor.Shared.Services
 @using RunningBlazor.Shared.Running
+@inject IDataFactory<RunData> DataFactory
 <PageTitle>Data</PageTitle>
 
 <h1>Data</h1>
@@ -49,19 +51,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        data = [
-            new()
-            {
-                Date = new(2025,3,16),
-                Feet = 5280,
-                Milliseconds = 20 * 60 * 1000
-            },
-            new()
-            {
-                Date = new(2025,3,17),
-                Feet = 5280 * 3,
-                Milliseconds = 25 * 60 * 1000
-            }
-        ];
+        data = DataFactory.GetAll().ToArray();
     }
 }

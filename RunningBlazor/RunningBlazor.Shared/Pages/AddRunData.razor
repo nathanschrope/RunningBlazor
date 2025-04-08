@@ -1,23 +1,83 @@
 ﻿@page "/addrundata"
 @using RunningBlazor.Shared.Services
 @using RunningBlazor.Shared.Running
+@using System.ComponentModel.DataAnnotations
 @inject IDataFactory<RunData> DataFactory
+@inject NavigationManager Navigation
 
 <PageTitle>Add Run Data</PageTitle>
 
 <h1>Hello, world!</h1>
 
-@foreach(var item in datas)
-{
-    <p>Value: @item.Minutes</p>
-}
+<EditForm Model="RunData" OnValidSubmit="Submit" FormName="AddRunData">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>
+        Date
+        <InputDate @bind-Value="RunData!.DateTime" />
+    </label>
+
+    <label>
+        Miles:
+        <InputNumber @bind-Value="RunData!.miles" />
+    </label>
+
+
+    <label>
+        Minutes
+        <InputNumber @bind-Value="RunData!.minutes" />
+    </label>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <NavLink href="">
+        <button class="btn">Cancel</button>
+    </NavLink>
+</EditForm>
+
 
 @code {
-    private IReadOnlyList<RunData> datas
+    private class RunDataForm
     {
-        get
+        [Required]
+        public DateTime? DateTime { get; set; }
+
+        [Required]
+        [Range(1, int.MaxValue)]
+        public double? minutes { get; set; }
+
+        [Required]
+        [Range(1, int.MaxValue)]
+        public double? miles { get; set; }
+    }
+
+    [SupplyParameterFromForm]
+    private RunDataForm? RunData { get; set; }
+    private bool submitted { get; set; }
+    protected override void OnInitialized()
+    {
+        RunData ??= new() { DateTime = DateTime.Today };
+        submitted = false;
+    }
+
+    private void Submit()
+    {
+        if (!submitted)
         {
-            return DataFactory.GetAll();
+            submitted = true;
+            Console.WriteLine("Hi");
+            DataFactory.Upsert(ConvertInput(RunData!));
+            Navigation.NavigateTo("");
         }
+    }
+
+    private static RunData ConvertInput(RunDataForm input)
+    {
+        return new RunData()
+            {
+                Date = input.DateTime!.Value,
+                Feet = (int)(input.miles!.Value * 5280),
+                Milliseconds = (int)(input.minutes!.Value * 60 * 1000)
+            };
     }
 }

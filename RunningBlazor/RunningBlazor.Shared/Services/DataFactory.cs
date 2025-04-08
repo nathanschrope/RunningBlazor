@@ -1,17 +1,29 @@
 ﻿using Microsoft.Data.Sqlite;
 using RunningBlazor.Shared.Services;
+using System.Runtime.InteropServices;
 
 namespace RunningBlazor.Services;
 
 public class DataFactory<T> : IDataFactory<T> where T : class
 {
 
-    private readonly string _connectionString = $"Data Source={Directory.GetCurrentDirectory()}\\{typeof(T).Name}.db;Pooling=False";
+    private readonly string _connectionString = "Data Source={0}\\RunningBlazor.db;Pooling=False";
     private readonly int _propCount;
 
     public DataFactory()
     {
+        string databasePath = "";
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            databasePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + "\\RunningBlazor";
+        else
+            databasePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + "/RunningBlazor";
+
+        if (!Directory.Exists(databasePath))
+            Directory.CreateDirectory(databasePath);
+
+        _connectionString = String.Format(_connectionString, databasePath);
         using var connection = new SqliteConnection(_connectionString);
+
         connection.Open();
 
         string tableInfo = "";
@@ -42,14 +54,23 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         command.ExecuteReader();
     }
 
-    public T Get(int ID)
+    public T? Get(int ID)
     {
-        throw new NotImplementedException();
+        using var connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        using var command = new SqliteCommand($"SELECT * FROM {typeof(T).Name} WHERE ID = @ID", connection);
+        command.Parameters.Add(new SqliteParameter("@ID", ID));
+        var reader = command.ExecuteReader();
+
+        if(reader.Read())
+            return Convert(reader);
+        return null;
     }
 
     public IReadOnlyList<T> Get(Func<T, bool> predicate)
     {
-        throw new NotImplementedException();
+        return GetAll().Where(predicate).ToList();
     }
 
     public IReadOnlyList<T> GetAll()
@@ -63,22 +84,7 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         List<T> result = new List<T>();
         while (reader.Read())
         {
-            object[] values = new object[_propCount];
-            reader.GetValues(values);
-            T dataObject = (T)Activator.CreateInstance(typeof(T), []);
-            var props = typeof(T).GetProperties().Where(x => x.CanWrite).ToArray();
-            for (int i = 0; i < _propCount; i++)
-            {
-                var prop = props[i];
-
-                if (prop.PropertyType == typeof(int))
-                    prop.SetValue(dataObject, Int32.Parse(values[i].ToString()));
-                else if (prop.PropertyType == typeof(DateTime))
-                    prop.SetValue(dataObject, DateTime.Parse((string)values[i]));
-                else
-                    prop.SetValue(dataObject, values[i]);
-            }
-            result.Add(dataObject);
+            result.Add(Convert(reader));
         }
 
         return result;
@@ -123,5 +129,25 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         var reader = command.ExecuteNonQuery();
 
         return true;
+    }
+
+    private T Convert(SqliteDataReader reader)
+    {
+        object[] values = new object[_propCount];
+        reader.GetValues(values);
+        T dataObject = (T)Activator.CreateInstance(typeof(T), []);
+        var props = typeof(T).GetProperties().Where(x => x.CanWrite).ToArray();
+        for (int i = 0; i < _propCount; i++)
+        {
+            var prop = props[i];
+
+            if (prop.PropertyType == typeof(int))
+                prop.SetValue(dataObject, Int32.Parse(values[i].ToString()));
+            else if (prop.PropertyType == typeof(DateTime))
+                prop.SetValue(dataObject, DateTime.Parse((string)values[i]));
+            else
+                prop.SetValue(dataObject, values[i]);
+        }
+        return dataObject;
     }
 }
