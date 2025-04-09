@@ -20,13 +20,13 @@
 
     <label>
         Miles:
-        <InputNumber @bind-Value="RunData!.miles" />
+        <InputNumber @bind-Value="RunData!.Miles" />
     </label>
 
 
     <label>
         Minutes
-        <InputNumber @bind-Value="RunData!.minutes" />
+        <InputNumber @bind-Value="RunData!.Minutes" />
     </label>
 
     <button type="submit" class="btn btn-primary">Submit</button>
@@ -44,11 +44,11 @@
 
         [Required]
         [Range(1, int.MaxValue)]
-        public double? minutes { get; set; }
+        public double? Minutes { get; set; }
 
         [Required]
         [Range(1, int.MaxValue)]
-        public double? miles { get; set; }
+        public double? Miles { get; set; }
     }
 
     [SupplyParameterFromForm]
@@ -65,7 +65,6 @@
         if (!submitted)
         {
             submitted = true;
-            Console.WriteLine("Hi");
             DataFactory.Upsert(ConvertInput(RunData!));
             Navigation.NavigateTo("");
         }
@@ -76,8 +75,8 @@
         return new RunData()
             {
                 Date = input.DateTime!.Value,
-                Feet = (int)(input.miles!.Value * 5280),
-                Milliseconds = (int)(input.minutes!.Value * 60 * 1000)
+                Feet = (int)(input.Miles!.Value * 5280),
+                Milliseconds = (int)(input.Minutes!.Value * 60 * 1000)
             };
     }
 }

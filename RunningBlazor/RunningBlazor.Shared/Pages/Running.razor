@@ -1,7 +1,18 @@
 ﻿@page "/"
+@using BlazorBootstrap
 @using RunningBlazor.Shared.Services
 @using RunningBlazor.Shared.Running
 @inject IDataFactory<RunData> DataFactory
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+<!-- Add chart.js reference if chart components are used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js" integrity="sha512-ZwR1/gSZM3ai6vCdI+LVF1zSq/5HznD3ZSTk7kajkaj4D292NLuduDCO1c/NT8Id+jE58KYLKT7hXnbtryGmMg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add chartjs-plugin-datalabels.min.js reference if chart components with data label feature is used in your application. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js" integrity="sha512-JPcRR8yFa8mmCsfrw4TNte1ZvF1e3+1SdGMslZvmrzDYxS69J7J49vkFL8u6u8PlPJK+H3voElBtUCzaXj+6ig==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Add sortable.js reference if SortableList component is used in your application. -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
 <PageTitle>Data</PageTitle>
 
 <h1>Data</h1>
@@ -12,6 +23,9 @@
 }
 else
 {
+    <LineChart @ref="lineChart">
+
+    </LineChart>
     <table class="table">
         <thead>
             <tr>
@@ -47,10 +61,126 @@ else
 }
 
 @code {
+    private LineChart lineChart = default!;
+    private LineChartOptions lineChartOptions = default!;
+    private ChartData chartData = default!;
     private RunData[]? data = null;
 
     protected override async Task OnInitializedAsync()
     {
         data = DataFactory.GetAll().ToArray();
+        chartData = new ChartData { Labels = GetLabels(), Datasets = GetDatasets() };
+        lineChartOptions = new()
+            {
+                IndexAxis = "x",
+                Interaction = new Interaction { Mode = InteractionMode.Index, Intersect = false },
+                Responsive = true,
+            };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await lineChart.InitializeAsync(chartData, lineChartOptions);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private List<string> GetLabels()
+    {
+        List<string> labels = [];
+        DateTime highest = DateTime.MinValue;
+        DateTime lowest = DateTime.MaxValue;
+        foreach (var dat in data)
+        {
+            if (dat.Date > highest)
+                highest = dat.Date;
+
+            if (dat.Date < lowest)
+                lowest = dat.Date;
+        }
+
+        lowest = Previous(lowest, DayOfWeek.Sunday);
+        highest = Previous(highest, DayOfWeek.Sunday);
+
+        while (lowest.Date <= highest.Date)
+        {
+            labels.Add(lowest.Date.ToString());
+            lowest = lowest.AddDays(7);
+        }
+        return labels;
+    }
+
+    private List<IChartDataset> GetDatasets()
+    {
+        List<IChartDataset> datasets = [];
+        DateTime highest = DateTime.MinValue;
+        DateTime lowest = DateTime.MaxValue;
+        foreach (var dat in data)
+        {
+            if (dat.Date > highest)
+                highest = dat.Date;
+
+            if (dat.Date < lowest)
+                lowest = dat.Date;
+        }
+
+        lowest = Previous(lowest, DayOfWeek.Sunday);
+        highest = Previous(highest, DayOfWeek.Sunday);
+
+        List<double?> weeklySum = [];
+
+        int highestWeek = highest.Date.Date.Subtract(lowest).Days / 7;
+        for (int i = 0; i <= highestWeek; i++)
+        {
+            weeklySum.Add(0);
+        }
+
+        foreach (var dat in data)
+        {
+            int week = dat.Date.Date.Subtract(lowest).Days / 7;
+
+            weeklySum[week] += dat.Feet;
+        }
+
+        for (int i = 0; i < weeklySum.Count; i++)
+        {
+            weeklySum[i] = weeklySum[i] / 5280.0;
+        }
+
+        var dataColor = ColorUtility.CategoricalTwelveColors[1].ToColor();
+        datasets.Add(new LineChartDataset()
+            {
+                Label = "Data",
+                BackgroundColor = dataColor.ToRgbaString(),
+                BorderColor = dataColor.ToRgbString(),
+                Data = weeklySum,
+            });
+
+        List<double?> constant = [];
+        foreach (var item in weeklySum)
+        {
+            constant.Add(6.25);
+        }
+        var staticColor = ColorUtility.CategoricalTwelveColors[0].ToColor();
+        datasets.Add(new LineChartDataset()
+            {
+                Label = "Goal",
+                BackgroundColor = staticColor.ToRgbaString(),
+                BorderColor = staticColor.ToRgbString(),
+                Data = constant
+            });
+
+        return datasets;
+    }
+
+    public static DateTime Previous(DateTime from, DayOfWeek dayOfWeek)
+    {
+        int start = (int)from.DayOfWeek;
+        int target = (int)dayOfWeek;
+        if (target > start)
+            target -= 7;
+        return from.AddDays(target - start);
     }
 }
