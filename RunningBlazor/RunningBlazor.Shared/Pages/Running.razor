@@ -101,6 +101,9 @@ else
                 lowest = dat.Date;
         }
 
+        if (lowest == DateTime.MaxValue && highest == DateTime.MinValue)
+            return [];
+
         lowest = Previous(lowest, DayOfWeek.Sunday);
         highest = Previous(highest, DayOfWeek.Sunday);
 
@@ -125,6 +128,9 @@ else
             if (dat.Date < lowest)
                 lowest = dat.Date;
         }
+
+        if (lowest == DateTime.MaxValue && highest == DateTime.MinValue)
+            return [];
 
         lowest = Previous(lowest, DayOfWeek.Sunday);
         highest = Previous(highest, DayOfWeek.Sunday);

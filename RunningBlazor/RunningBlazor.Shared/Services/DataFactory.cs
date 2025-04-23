@@ -43,7 +43,12 @@ public class DataFactory<T> : IDataFactory<T> where T : class
                     tableInfo += $"{prop.Name} varchar,";
                 else if (prop.PropertyType == typeof(DateTime))
                     tableInfo += $"{prop.Name} DateTime,";
-
+                else if (prop.PropertyType == typeof(bool))
+                    tableInfo += $"{prop.Name} BOOLEAN,";
+                else if (prop.PropertyType == typeof(double))
+                    tableInfo += $"{prop.Name} DOUBLE,";
+                else
+                    throw new NotImplementedException();
                 _propCount++;
             }
 
@@ -63,7 +68,7 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         command.Parameters.Add(new SqliteParameter("@ID", ID));
         var reader = command.ExecuteReader();
 
-        if(reader.Read())
+        if (reader.Read())
             return Convert(reader);
         return null;
     }

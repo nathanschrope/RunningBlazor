@@ -1,0 +1,57 @@
+﻿@page "/settings"
+@using RunningBlazor.Shared.Services
+@using RunningBlazor.Shared.Running
+@using System.ComponentModel.DataAnnotations
+@inject ProgramSettings programSettings
+
+<PageTitle>Settings</PageTitle>
+
+<h1>Settings</h1>
+
+<EditForm Model="_newSettings" OnValidSubmit="Submit" FormName="Settings">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>
+        Static Goal Miles
+        <InputNumber @bind-Value="_newSettings!.StaticGoalMiles" />
+    </label>
+
+    <br /><br />
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@code {
+    private class SettingsInfo
+    {
+        public double? StaticGoalMiles { get; set; }
+    }
+
+    [SupplyParameterFromForm]
+    private SettingsInfo _newSettings { get; set; }
+    private bool submitted { get; set; }
+    private const string STATIC_GOAL_MILES = "StaticGoalMiles";
+
+    protected override void OnInitialized()
+    {
+        _newSettings = new()
+        {
+            StaticGoalMiles = programSettings.StaticGoalMiles
+        };
+
+        submitted = false;
+    }
+
+    private void Submit()
+    {
+        if (!submitted)
+        {
+            submitted = true;
+            if (_newSettings.StaticGoalMiles.HasValue && !double.Equals(programSettings.StaticGoalMiles, _newSettings.StaticGoalMiles.Value))
+            {
+                programSettings.UpdateStaticGoalMiles(_newSettings.StaticGoalMiles.Value);
+            }
+            submitted = false;
+        }
+    }
+}

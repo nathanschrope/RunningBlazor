@@ -15,6 +15,8 @@ class Program
         // Add device-specific services used by the RunningBlazor.Shared project
         builder.Services.AddSingleton<IFormFactor, FormFactor>();
         builder.Services.AddSingleton<IDataFactory<RunData>, DataFactory<RunData>>();
+        builder.Services.AddSingleton<IDataFactory<Setting>, DataFactory<Setting>>();
+        builder.Services.AddSingleton<ProgramSettings, ProgramSettings>();
 
         await builder.Build().RunAsync();
     }

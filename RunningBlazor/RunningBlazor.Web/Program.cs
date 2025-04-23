@@ -2,6 +2,8 @@ using RunningBlazor.Web.Components;
 using RunningBlazor.Shared.Services;
 using RunningBlazor.Web.Services;
 using SQLitePCL;
+using RunningBlazor.Services;
+using RunningBlazor.Shared.Running;
 
 namespace RunningBlazor;
 
@@ -19,6 +21,9 @@ public class Program
 
         // Add device-specific services used by the RunningBlazor.Shared project
         builder.Services.AddSingleton<IFormFactor, FormFactor>();
+        builder.Services.AddSingleton<IDataFactory<RunData>, DataFactory<RunData>>();
+        builder.Services.AddSingleton<IDataFactory<Setting>, DataFactory<Setting>>();
+        builder.Services.AddSingleton<ProgramSettings, ProgramSettings>();
 
         var app = builder.Build();
 

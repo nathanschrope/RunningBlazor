@@ -7,8 +7,6 @@
 
 <PageTitle>Add Run Data</PageTitle>
 
-<h1>Hello, world!</h1>
-
 <EditForm Model="RunData" OnValidSubmit="Submit" FormName="AddRunData">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -54,6 +52,7 @@
     [SupplyParameterFromForm]
     private RunDataForm? RunData { get; set; }
     private bool submitted { get; set; }
+
     protected override void OnInitialized()
     {
         RunData ??= new() { DateTime = DateTime.Today };
