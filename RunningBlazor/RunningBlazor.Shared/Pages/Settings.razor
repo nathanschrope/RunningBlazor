@@ -3,6 +3,7 @@
 @using RunningBlazor.Shared.Running
 @using System.ComponentModel.DataAnnotations
 @inject ProgramSettings programSettings
+@inject NavigationManager Navigation
 
 <PageTitle>Settings</PageTitle>
 
@@ -51,7 +52,7 @@
             {
                 programSettings.UpdateStaticGoalMiles(_newSettings.StaticGoalMiles.Value);
             }
-            submitted = false;
+            Navigation.NavigateTo("");
         }
     }
 }
