@@ -1,4 +1,8 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using RunningBlazor.Shared.Services
+@using RunningBlazor.Shared.Running
+@inject IDataFactory<DataTab> TabFactory
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">RunningBlazor</a>
     </div>
@@ -14,6 +18,14 @@
             </NavLink>
         </div>
 
+        @foreach(var tab in dataTabs){
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="@($"datatab/{tab.ID}")">
+                    <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> @tab.Name
+                </NavLink>
+            </div>
+        }
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="settings">
                 <span class="bi bi-gear-fill-nav-menu" aria-hidden="true"></span> Settings
@@ -22,3 +34,11 @@
     </nav>
 </div>
 
+@code{
+    private IReadOnlyList<DataTab> dataTabs = [];
+
+    protected override void OnInitialized()
+    {
+        dataTabs = TabFactory.GetAll();
+    }
+}

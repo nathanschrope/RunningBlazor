@@ -4,11 +4,13 @@
 @using System.ComponentModel.DataAnnotations
 @inject ProgramSettings programSettings
 @inject NavigationManager Navigation
+@inject IDataFactory<DataTab> TabFactory
 
 <PageTitle>Settings</PageTitle>
 
 <h1>Settings</h1>
-
+<br />
+<h2>Global Settings</h2>
 <EditForm Model="_newSettings" OnValidSubmit="Submit" FormName="Settings">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -18,9 +20,35 @@
         <InputNumber @bind-Value="_newSettings!.StaticGoalMiles" />
     </label>
 
-    <br /><br />
+    <br />
+    <br />
+
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
+<br />
+<br />
+<h2>Data Tab Settings</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Goal</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var tab in dataTabs)
+        {
+            <tr>
+                <td>@tab.Name</td>
+                <td>@tab.Goal</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<br />
+<NavLink href="adddatatab">
+    <button class="btn btn-primary">Add Data Tab</button>
+</NavLink>
 
 @code {
     private class SettingsInfo
@@ -32,6 +60,7 @@
     private SettingsInfo _newSettings { get; set; }
     private bool submitted { get; set; }
     private const string STATIC_GOAL_MILES = "StaticGoalMiles";
+    private IReadOnlyList<DataTab> dataTabs = [];
 
     protected override void OnInitialized()
     {
@@ -41,6 +70,8 @@
         };
 
         submitted = false;
+
+        dataTabs = TabFactory.GetAll();
     }
 
     private void Submit()

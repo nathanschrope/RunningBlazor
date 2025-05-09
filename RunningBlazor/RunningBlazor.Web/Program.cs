@@ -23,6 +23,7 @@ public class Program
         builder.Services.AddSingleton<IFormFactor, FormFactor>();
         builder.Services.AddSingleton<IDataFactory<RunData>, DataFactory<RunData>>();
         builder.Services.AddSingleton<IDataFactory<Setting>, DataFactory<Setting>>();
+        builder.Services.AddSingleton<IDataFactory<DataTab>, DataFactory<DataTab>>();
         builder.Services.AddSingleton<ProgramSettings, ProgramSettings>();
 
         var app = builder.Build();

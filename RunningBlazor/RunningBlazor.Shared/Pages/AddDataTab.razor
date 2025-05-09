@@ -1,0 +1,71 @@
+﻿@page "/adddatatab"
+@using RunningBlazor.Shared.Services
+@using RunningBlazor.Shared.Running
+@using System.ComponentModel.DataAnnotations
+@inject IDataFactory<DataTab> DataFactory
+@inject NavigationManager Navigation
+
+<PageTitle>Add Data Tab</PageTitle>
+
+<EditForm Model="DataTab" OnValidSubmit="Submit" FormName="AddDataTab">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>
+        Name
+        <InputText @bind-Value="DataTab!.Name" />
+    </label>
+
+    <label>
+        Goal:
+        <InputNumber @bind-Value="DataTab!.Goal" />
+    </label>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <NavLink href="settings">
+        <button class="btn">Cancel</button>
+    </NavLink>
+</EditForm>
+
+@code {
+    private class DataTabForm
+    {
+        [Required]
+        [MinLength(1)]
+        [RegularExpression(@"^[a-zA-Z0-9_]+$", ErrorMessage = "Not valid Table Name")]
+        public string? Name { get; set; }
+
+        [Required]
+        [Range(0, double.MaxValue)]
+        public double? Goal { get; set; }
+    }
+
+    [SupplyParameterFromForm]
+    private DataTabForm? DataTab { get; set; }
+    private bool submitted { get; set; }
+
+    protected override void OnInitialized()
+    {
+        DataTab ??= new();
+        submitted = false;
+    }
+
+    private void Submit()
+    {
+        if (!submitted)
+        {
+            submitted = true;
+            DataFactory.Upsert(ConvertInput(DataTab!));
+            Navigation.NavigateTo("/settings");
+        }
+    }
+
+    private static DataTab ConvertInput(DataTabForm input)
+    {
+        return new DataTab()
+            {
+                Name = input.Name!,
+                Goal = input.Goal!.Value
+            };
+    }
+}

@@ -6,12 +6,15 @@ namespace RunningBlazor.Services;
 
 public class DataFactory<T> : IDataFactory<T> where T : class
 {
-
     private readonly string _connectionString = "Data Source={0}\\RunningBlazor.db;Pooling=False";
     private readonly int _propCount;
+    private readonly string _tableName;
 
-    public DataFactory()
+    public DataFactory() : this(typeof(T).Name) { }
+
+    public DataFactory(string tableName)
     {
+        _tableName = $"[{tableName}]";
         string databasePath = "";
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             databasePath = System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData) + "\\RunningBlazor";
@@ -55,7 +58,7 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         }
         tableInfo = tableInfo.Substring(0, tableInfo.Length - 1);
 
-        using var command = new SqliteCommand($"CREATE TABLE IF NOT EXISTS {typeof(T).Name} ({tableInfo})", connection);
+        using var command = new SqliteCommand($"CREATE TABLE IF NOT EXISTS {_tableName} ({tableInfo})", connection);
         command.ExecuteReader();
     }
 
@@ -64,7 +67,7 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        using var command = new SqliteCommand($"SELECT * FROM {typeof(T).Name} WHERE ID = @ID", connection);
+        using var command = new SqliteCommand($"SELECT * FROM {_tableName} WHERE ID = @ID", connection);
         command.Parameters.Add(new SqliteParameter("@ID", ID));
         var reader = command.ExecuteReader();
 
@@ -83,7 +86,7 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        using var command = new SqliteCommand($"SELECT * FROM {typeof(T).Name}", connection);
+        using var command = new SqliteCommand($"SELECT * FROM {_tableName}", connection);
         var reader = command.ExecuteReader();
 
         List<T> result = new List<T>();
@@ -110,7 +113,7 @@ public class DataFactory<T> : IDataFactory<T> where T : class
             }
             else if (prop.CanWrite)
             {
-                if (prop.PropertyType == typeof(int))
+                if (prop.PropertyType == typeof(int) || prop.PropertyType == typeof(double))
                 {
                     tableInfo += prop.Name + ",";
                     valueInfo += prop.GetValue(data) + ",";
@@ -130,7 +133,7 @@ public class DataFactory<T> : IDataFactory<T> where T : class
         tableInfo = tableInfo.Substring(0, tableInfo.Length - 1);
         valueInfo = valueInfo.Substring(0, valueInfo.Length - 1);
 
-        using var command = new SqliteCommand($"INSERT INTO {typeof(T).Name} ({tableInfo}) values ({valueInfo})", connection);
+        using var command = new SqliteCommand($"INSERT INTO {_tableName} ({tableInfo}) values ({valueInfo})", connection);
         var reader = command.ExecuteNonQuery();
 
         return true;
